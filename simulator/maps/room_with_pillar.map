@@ -1,0 +1,53 @@
+# lidar-bot-system simulator map: "room_with_pillar"
+#
+# Single source of truth for a predefined physical layout that the
+# cpp/ and java/ bot simulators both ray-cast against, so a fresh run of
+# either implementation reconstructs the same room in the dashboard.
+#
+# Coordinate convention (must match app/occupancy_grid.py's
+# integrate_point() exactly -- see /DATA_CONTRACT.md and that module's
+# docstring):
+#   - The sensor sits at the origin (0, 0) of THIS file's coordinate
+#     space. Do not add a SENSOR position field -- the sensor is always
+#     the origin by construction, matching how OccupancyGrid places the
+#     bot at a fixed grid cell and ray-casts outward from it.
+#   - +x = "right" = angle_cdeg 0 (0 deg)
+#   - +y = "forward", away from the sensor = angle_cdeg 9000 (90 deg)
+#   - -x direction (left) = angle_cdeg 18000 (180 deg)
+#   - The sweep only ever covers 0..180 deg (a half-circle in front of the
+#     sensor), matching stm32-lidar-firmware's oscillating stepper sweep --
+#     there is intentionally nothing behind the sensor (y < 0) in this map,
+#     since no implementation will ever cast a ray there.
+#   - Units: meters.
+#
+# Format: one directive per line. Blank lines and lines starting with #
+# are ignored. Whitespace-separated fields.
+#
+#   SENSOR_MAX_RANGE_MM <int>
+#       Readings beyond this distance are reported as out-of-range
+#       (0xFFFF), matching a real VL53L0X's practical range limit rather
+#       than letting the simulator report unrealistic long-distance hits.
+#
+#   WALL <x1> <y1> <x2> <y2>
+#       One straight wall segment, endpoints in meters, sensor-relative.
+#       A closed or open polyline is just a sequence of WALL lines sharing
+#       endpoints -- there's no separate "polygon" directive.
+#
+# Layout: a room roughly 2.4m wide x 1.6m deep directly in front of the
+# sensor (open on the sensor's side, like a doorway), with one square
+# pillar near the middle. Far corners sit right at ~2.0m from the origin,
+# matching SENSOR_MAX_RANGE_MM below, so a few extreme-corner readings
+# come back out-of-range -- a deliberate, realistic touch, not a bug.
+
+SENSOR_MAX_RANGE_MM 2000
+
+# Room walls: left, right, far (no near wall -- that's the open sensor side)
+WALL -1.20  0.00  -1.20  1.60
+WALL  1.20  0.00   1.20  1.60
+WALL -1.20  1.60   1.20  1.60
+
+# Square pillar obstacle, roughly centered, slightly nearer the sensor
+WALL -0.30  0.60   0.30  0.60
+WALL  0.30  0.60   0.30  1.00
+WALL  0.30  1.00  -0.30  1.00
+WALL -0.30  1.00  -0.30  0.60
