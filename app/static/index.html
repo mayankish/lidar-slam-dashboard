@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>lidar-slam-dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark">&#9678;</span>
+      <div>
+        <h1>lidar-slam-dashboard</h1>
+        <p class="subtitle">live occupancy-grid mapping &middot; lidar-bot-system</p>
+      </div>
+    </div>
+    <div class="topbar-status">
+      <div class="pill" id="wsPill">
+        <span class="dot" id="wsDot"></span>
+        <span id="wsLabel">connecting&hellip;</span>
+      </div>
+      <div class="pill" id="linkPill">
+        <span class="dot" id="linkDot"></span>
+        <span id="linkLabel">no telemetry</span>
+      </div>
+      <div class="pill" id="sweepPill">sweeps: <strong id="sweepCount">0</strong></div>
+    </div>
+  </header>
+
+  <main class="layout">
+    <section class="map-card card">
+      <div class="card-header">
+        <h2>Occupancy grid</h2>
+        <div class="legend">
+          <span class="legend-item"><i class="swatch swatch-unknown"></i>unknown</span>
+          <span class="legend-item"><i class="swatch swatch-free"></i>free</span>
+          <span class="legend-item"><i class="swatch swatch-occupied"></i>occupied</span>
+        </div>
+      </div>
+      <div class="canvas-wrap">
+        <canvas id="gridCanvas" width="600" height="600"></canvas>
+        <div class="canvas-overlay" id="canvasOverlay">Waiting for the first completed sweep&hellip;</div>
+      </div>
+      <div class="map-footer">
+        <span id="gridMeta">&mdash; &times; &mdash; cells &middot; &mdash; m/cell</span>
+        <span id="sweepDirLabel">&nbsp;</span>
+      </div>
+    </section>
+
+    <aside class="sidebar">
+      <div class="card">
+        <h2>Link</h2>
+        <dl class="stat-list">
+          <div class="stat"><dt>Frames received</dt><dd id="statFrames">0</dd></div>
+          <div class="stat"><dt>CRC failures</dt><dd id="statCrcFail">0</dd></div>
+          <div class="stat"><dt>Sequence loss</dt><dd id="statSeqLoss">0</dd></div>
+          <div class="stat"><dt>Last frame</dt><dd id="statLastFrame">never</dd></div>
+        </dl>
+      </div>
+
+      <div class="card">
+        <h2>Health</h2>
+        <div class="battery-row">
+          <div class="battery" id="batteryBar"><div class="battery-fill" id="batteryFill"></div></div>
+          <span id="batteryLabel">&mdash; mV</span>
+        </div>
+        <dl class="stat-list">
+          <div class="stat"><dt>Fault flags</dt><dd id="faultFlags">&mdash;</dd></div>
+          <div class="stat"><dt>Last update</dt><dd id="healthAge">&mdash;</dd></div>
+        </dl>
+      </div>
+
+      <div class="card">
+        <h2>Controls</h2>
+        <div class="btn-row">
+          <button id="btnStart" class="btn btn-primary">Start scan</button>
+          <button id="btnStop" class="btn">Stop scan</button>
+          <button id="btnPing" class="btn">Ping</button>
+        </div>
+        <div class="range-row">
+          <label for="minDeg">Sweep range (degrees)</label>
+          <div class="range-inputs">
+            <input id="minDeg" type="number" value="0" min="0" max="180" />
+            <span>&ndash;</span>
+            <input id="maxDeg" type="number" value="180" min="0" max="180" />
+            <button id="btnSetRange" class="btn btn-primary">Set</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Activity</h2>
+        <ul class="log" id="activityLog"></ul>
+      </div>
+    </aside>
+  </main>
+
+  <div id="toast"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>

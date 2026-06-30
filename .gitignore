@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+.pytest_cache/
+*.egg-info/
+.DS_Store
+
+# simulator build artifacts (built locally via make / javac -- see simulator/README.md)
+simulator/cpp/simulate_bot
+simulator/cpp/*.o
+simulator/java/*.class
